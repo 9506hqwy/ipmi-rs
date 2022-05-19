@@ -1,0 +1,30 @@
+[package]
+name = "ipmi"
+version = "0.1.0"
+authors = ["9506hqwy"]
+edition = "2021"
+rust-version = "1.60"
+repository = "https://github.com/9506hqwy/ipmi-rs"
+license = "MIT OR Apache-2.0"
+keywords = ["ipmi"]
+categories = ["network-programming"]
+
+[dependencies]
+aes = "0.8.1"
+cbc = { version = "0.1.2", features = ["std"] }
+hmac = "0.12.1"
+log = "0.4.17"
+rand = "0.8.5"
+sha-1 = "0.10.0"
+uuid = "1.0.0"
+
+[dev-dependencies]
+clap = "*"
+env_logger = "*"
+
+[[example]]
+name = "ipmi"
+
+[profile.release]
+strip = "symbols"
+lto = true
