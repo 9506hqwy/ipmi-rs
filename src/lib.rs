@@ -14,7 +14,7 @@ pub fn run_chassis_status<A: ToSocketAddrs>(
     remote: A,
     username: &str,
     password: &str,
-) -> Result<(), Error> {
+) -> Result<Vec<u8>, Error> {
     let socket = UdpSocket::bind("0.0.0.0:0").map_err(Error::Bind)?;
     trace!("binded: {}", socket.local_addr().unwrap());
 
@@ -28,17 +28,12 @@ pub fn run_chassis_status<A: ToSocketAddrs>(
     let res = command::get_chassis_status(&client, 2)?;
     trace!("get chassis status: {:?}", res);
 
-    let ps = res.data().unwrap()[0] & 0x01;
-    if ps == 0 {
-        println!("power off.");
-    } else {
-        println!("power on.");
-    }
+    let ret = res.data().unwrap().to_vec();
 
     let res = command::close_session(&client, 3)?;
     trace!("close session: {:?}", res);
 
-    Ok(())
+    Ok(ret)
 }
 
 pub fn run_chassis_control<A: ToSocketAddrs>(

@@ -68,6 +68,12 @@ fn run_chassis_status(args: &ArgMatches) -> Result<(), Error> {
     let addr = args.value_of("addr").unwrap();
     let username = args.value_of("username").unwrap();
     let password = args.value_of("password").unwrap();
-    ipmi::run_chassis_status(addr, username, password)?;
+    let res = ipmi::run_chassis_status(addr, username, password)?;
+    let ps = res[0] & 0x01;
+    if ps == 0 {
+        println!("power off.");
+    } else {
+        println!("power on.");
+    }
     Ok(())
 }
