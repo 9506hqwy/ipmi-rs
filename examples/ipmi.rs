@@ -1,6 +1,7 @@
 use clap::{Arg, ArgMatches, Command};
 use ipmi::error::Error;
 use ipmi::ipmi::ChassisPowerState;
+use std::net::Ipv4Addr;
 use std::str::FromStr;
 
 fn main() -> Result<(), Error> {
@@ -55,7 +56,7 @@ fn cmd_chassis_status() -> Command<'static> {
 }
 
 fn run_chassis_control(args: &ArgMatches) -> Result<(), Error> {
-    let addr = args.value_of("addr").unwrap();
+    let addr = parse_addr(args.value_of("addr").unwrap());
     let username = args.value_of("username").unwrap();
     let password = args.value_of("password").unwrap();
     let state = args.value_of("state").unwrap();
@@ -65,7 +66,7 @@ fn run_chassis_control(args: &ArgMatches) -> Result<(), Error> {
 }
 
 fn run_chassis_status(args: &ArgMatches) -> Result<(), Error> {
-    let addr = args.value_of("addr").unwrap();
+    let addr = parse_addr(args.value_of("addr").unwrap());
     let username = args.value_of("username").unwrap();
     let password = args.value_of("password").unwrap();
     let res = ipmi::run_chassis_status(addr, username, password)?;
@@ -76,4 +77,12 @@ fn run_chassis_status(args: &ArgMatches) -> Result<(), Error> {
         println!("power on.");
     }
     Ok(())
+}
+
+fn parse_addr(value: &str) -> String {
+    if value.parse::<Ipv4Addr>().is_ok() {
+        format!("{}:623", value)
+    } else {
+        value.to_string()
+    }
 }
