@@ -37,7 +37,14 @@ fn cmd_chassis_control() -> Command<'static> {
         .arg(Arg::new("addr").required(true).index(1))
         .arg(Arg::new("username").required(true).index(2))
         .arg(Arg::new("password").required(true).index(3))
-        .arg(Arg::new("state").required(true).index(4))
+        .arg(Arg::new("state").required(true).index(4).possible_values([
+            "PowerDown",
+            "PowerUp",
+            "PowerCycle",
+            "HardReset",
+            "Diagnostic",
+            "Acpi",
+        ]))
 }
 
 fn cmd_chassis_status() -> Command<'static> {
