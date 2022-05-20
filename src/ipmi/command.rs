@@ -145,7 +145,7 @@ pub fn set_privilege_level<A: ToSocketAddrs>(
     client: &Client<A>,
     seq_number: u32,
 ) -> Result<Response, Error> {
-    let req = request::set_privilege_level(client.priv_level());
+    let req = request::set_privilege_level(PrivilegeLevel::Administrator);
     let msg = req.padding(client.confidentiality().key_len());
 
     let cipher = encrypt_payload(client, msg)?;
