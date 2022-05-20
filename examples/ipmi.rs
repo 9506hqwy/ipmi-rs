@@ -22,7 +22,7 @@ fn main() -> Result<(), Error> {
 
 fn cmd_ipmi() -> Command<'static> {
     Command::new("IPMI")
-        .version("0.1.0")
+        .version("0.2.0")
         .subcommand(cmd_chassis())
 }
 
