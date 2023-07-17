@@ -19,8 +19,8 @@ sha-1 = "0.10.0"
 uuid = "1.0.0"
 
 [dev-dependencies]
-clap = "*"
-env_logger = "*"
+clap = "3.2.25"
+env_logger = "0.10.0"
 
 [[example]]
 name = "ipmi"
