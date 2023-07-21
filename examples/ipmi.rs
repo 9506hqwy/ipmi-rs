@@ -21,24 +21,24 @@ fn main() -> Result<(), Error> {
     Ok(())
 }
 
-fn cmd_ipmi() -> Command<'static> {
+fn cmd_ipmi() -> Command {
     Command::new("IPMI")
         .version("0.2.0")
         .subcommand(cmd_chassis())
 }
 
-fn cmd_chassis() -> Command<'static> {
+fn cmd_chassis() -> Command {
     Command::new("chassis")
         .subcommand(cmd_chassis_control())
         .subcommand(cmd_chassis_status())
 }
 
-fn cmd_chassis_control() -> Command<'static> {
+fn cmd_chassis_control() -> Command {
     Command::new("control")
         .arg(Arg::new("addr").required(true).index(1))
         .arg(Arg::new("username").required(true).index(2))
         .arg(Arg::new("password").required(true).index(3))
-        .arg(Arg::new("state").required(true).index(4).possible_values([
+        .arg(Arg::new("state").required(true).index(4).value_parser([
             "PowerDown",
             "PowerUp",
             "PowerCycle",
@@ -48,7 +48,7 @@ fn cmd_chassis_control() -> Command<'static> {
         ]))
 }
 
-fn cmd_chassis_status() -> Command<'static> {
+fn cmd_chassis_status() -> Command {
     Command::new("status")
         .arg(Arg::new("addr").required(true).index(1))
         .arg(Arg::new("username").required(true).index(2))
@@ -56,19 +56,19 @@ fn cmd_chassis_status() -> Command<'static> {
 }
 
 fn run_chassis_control(args: &ArgMatches) -> Result<(), Error> {
-    let addr = parse_addr(args.value_of("addr").unwrap());
-    let username = args.value_of("username").unwrap();
-    let password = args.value_of("password").unwrap();
-    let state = args.value_of("state").unwrap();
+    let addr = parse_addr(args.get_one::<String>("addr").unwrap());
+    let username = args.get_one::<String>("username").unwrap();
+    let password = args.get_one::<String>("password").unwrap();
+    let state = args.get_one::<String>("state").unwrap();
     let ps = ChassisPowerState::from_str(state).unwrap();
     ipmi::run_chassis_control(addr, username, password, ps)?;
     Ok(())
 }
 
 fn run_chassis_status(args: &ArgMatches) -> Result<(), Error> {
-    let addr = parse_addr(args.value_of("addr").unwrap());
-    let username = args.value_of("username").unwrap();
-    let password = args.value_of("password").unwrap();
+    let addr = parse_addr(args.get_one::<String>("addr").unwrap());
+    let username = args.get_one::<String>("username").unwrap();
+    let password = args.get_one::<String>("password").unwrap();
     let res = ipmi::run_chassis_status(addr, username, password)?;
     let ps = res[0] & 0x01;
     if ps == 0 {
