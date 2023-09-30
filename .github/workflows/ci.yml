@@ -49,7 +49,7 @@ jobs:
         $(rustc --print sysroot)/lib/rustlib/${TARGET_HOST}/bin/llvm-profdata merge \
             --sparse \
             --output=default.profdata \
-            **/default_*.profraw
+            default_*.profraw
 
         $(rustc --print sysroot)/lib/rustlib/${TARGET_HOST}/bin/llvm-cov export \
             --ignore-filename-regex='library/std/src' \
