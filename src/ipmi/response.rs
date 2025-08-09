@@ -281,8 +281,8 @@ mod tests {
     fn response_parse_invalid_packet_length() {
         let bytes = vec![0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06];
         match Response::parse(&bytes) {
-            Err(Error::InvalidPacketLength) => assert!(true),
-            _ => assert!(false),
+            Err(Error::InvalidPacketLength) => {}
+            _ => panic!(),
         }
     }
 
@@ -290,8 +290,8 @@ mod tests {
     fn response_parse_ipmi_command() {
         let bytes = vec![0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07];
         match Response::parse(&bytes) {
-            Err(Error::IpmiCommand(CompletionCode::Error(6))) => assert!(true),
-            _ => assert!(false),
+            Err(Error::IpmiCommand(CompletionCode::Error(6))) => {}
+            _ => panic!(),
         }
     }
 
@@ -329,8 +329,8 @@ mod tests {
             0x08, 0x09, 0x00, 0x01, 0x02, 0x03, 0x04,
         ];
         match RmcppOpenResponse::parse(&bytes) {
-            Err(Error::InvalidPacketLength) => assert!(true),
-            _ => assert!(false),
+            Err(Error::InvalidPacketLength) => {}
+            _ => panic!(),
         }
     }
 
@@ -342,8 +342,8 @@ mod tests {
             0x08, 0x09, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05,
         ];
         match RmcppOpenResponse::parse(&bytes) {
-            Err(Error::RmcppCommand(1)) => assert!(true),
-            _ => assert!(false),
+            Err(Error::RmcppCommand(1)) => {}
+            _ => panic!(),
         }
     }
 
@@ -373,8 +373,8 @@ mod tests {
             0x08, 0x09, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
         ];
         match RakpMessage2::parse(&bytes, AuthenticationAlgorithm::None) {
-            Err(Error::InvalidPacketLength) => assert!(true),
-            _ => assert!(false),
+            Err(Error::InvalidPacketLength) => {}
+            _ => panic!(),
         }
     }
 
@@ -386,8 +386,8 @@ mod tests {
             0x08, 0x09, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09,
         ];
         match RakpMessage2::parse(&bytes, AuthenticationAlgorithm::None) {
-            Err(Error::RmcppCommand(1)) => assert!(true),
-            _ => assert!(false),
+            Err(Error::RmcppCommand(1)) => {}
+            _ => panic!(),
         }
     }
 
@@ -410,8 +410,8 @@ mod tests {
     fn rakp4_parse_invalid_packet_length() {
         let bytes = vec![0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06];
         match RakpMessage4::parse(&bytes, IntegrityAlgorithm::None) {
-            Err(Error::InvalidPacketLength) => assert!(true),
-            _ => assert!(false),
+            Err(Error::InvalidPacketLength) => {}
+            _ => panic!(),
         }
     }
 
@@ -419,8 +419,8 @@ mod tests {
     fn rakp4_parse_rmcpp_command() {
         let bytes = vec![0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07];
         match RakpMessage4::parse(&bytes, IntegrityAlgorithm::None) {
-            Err(Error::RmcppCommand(1)) => assert!(true),
-            _ => assert!(false),
+            Err(Error::RmcppCommand(1)) => {}
+            _ => panic!(),
         }
     }
 

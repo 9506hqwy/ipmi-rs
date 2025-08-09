@@ -23,15 +23,15 @@ pub fn run_chassis_status<A: ToSocketAddrs>(
     open_session(&mut client)?;
 
     let res = command::set_privilege_level(&client, 1)?;
-    trace!("set privilege level: {:?}", res);
+    trace!("set privilege level: {res:?}");
 
     let res = command::get_chassis_status(&client, 2)?;
-    trace!("get chassis status: {:?}", res);
+    trace!("get chassis status: {res:?}");
 
     let ret = res.data().unwrap().to_vec();
 
     let res = command::close_session(&client, 3)?;
-    trace!("close session: {:?}", res);
+    trace!("close session: {res:?}");
 
     Ok(ret)
 }
@@ -50,13 +50,13 @@ pub fn run_chassis_control<A: ToSocketAddrs>(
     open_session(&mut client)?;
 
     let res = command::set_privilege_level(&client, 1)?;
-    trace!("set privilege level: {:?}", res);
+    trace!("set privilege level: {res:?}");
 
     let res = command::control_chassis(&client, 2, state)?;
-    trace!("control chassis: {:?}", res);
+    trace!("control chassis: {res:?}");
 
     let res = command::close_session(&client, 3)?;
-    trace!("close session: {:?}", res);
+    trace!("close session: {res:?}");
 
     Ok(())
 }
@@ -65,7 +65,7 @@ fn open_session<A: ToSocketAddrs>(client: &mut Client<A>) -> Result<(), Error> {
     let remote_id = u32::from_le_bytes(rand::random::<[u8; 4]>());
 
     let res = command::get_channel_authentication_cap(client)?;
-    trace!("get channel authentication: {:?}", res);
+    trace!("get channel authentication: {res:?}");
 
     let res = command::open_rmcpp_session(
         client,
@@ -74,13 +74,13 @@ fn open_session<A: ToSocketAddrs>(client: &mut Client<A>) -> Result<(), Error> {
         IntegrityAlgorithm::HmacSha1_96,
         ConfidentialityAlgorithm::AesCbc128,
     )?;
-    trace!("open rmcpp session: {:?}", res);
+    trace!("open rmcpp session: {res:?}");
 
     let res = command::rakp_message_1(client)?;
-    trace!("RAKP1: {:?}", res);
+    trace!("RAKP1: {res:?}");
 
     let res = command::rakp_message_3(client)?;
-    trace!("RAKP3: {:?}", res);
+    trace!("RAKP3: {res:?}");
 
     Ok(())
 }

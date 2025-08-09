@@ -157,8 +157,8 @@ mod tests {
     fn packet_try_from_invali_packet_length() {
         let bytes = vec![0x00, 0x01, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00];
         match Packet::try_from(bytes.as_slice()) {
-            Err(Error::InvalidPacketLength) => assert!(true),
-            _ => assert!(false),
+            Err(Error::InvalidPacketLength) => {}
+            _ => panic!(),
         }
     }
 

@@ -81,7 +81,7 @@ fn run_chassis_status(args: &ArgMatches) -> Result<(), Error> {
 
 fn parse_addr(value: &str) -> String {
     if value.parse::<Ipv4Addr>().is_ok() {
-        format!("{}:623", value)
+        format!("{value}:623")
     } else {
         value.to_string()
     }
