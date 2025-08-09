@@ -4,8 +4,8 @@ use super::{
 };
 use crate::error::Error;
 use crate::rmcp;
-use hmac::digest::crypto_common::InvalidLength;
 use hmac::Mac;
+use hmac::digest::crypto_common::InvalidLength;
 use std::convert::TryFrom;
 use std::net::{ToSocketAddrs, UdpSocket};
 use uuid::Uuid;

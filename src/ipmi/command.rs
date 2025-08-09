@@ -1,10 +1,10 @@
 use super::response::{RakpMessage2, RakpMessage4, Response, RmcppOpenResponse};
 use super::{
-    pkt15, pkt20, request, AuthType, AuthenticationAlgorithm, ChassisPowerState, Client,
-    ConfidentialityAlgorithm, IntegrityAlgorithm, PayloadType, PrivilegeLevel,
+    AuthType, AuthenticationAlgorithm, ChassisPowerState, Client, ConfidentialityAlgorithm,
+    IntegrityAlgorithm, PayloadType, PrivilegeLevel, pkt15, pkt20, request,
 };
 use crate::error::Error;
-use aes::cipher::{block_padding::NoPadding, BlockDecryptMut, BlockEncryptMut, KeyIvInit};
+use aes::cipher::{BlockDecryptMut, BlockEncryptMut, KeyIvInit, block_padding::NoPadding};
 use hmac::Hmac;
 use rand;
 use sha1::Sha1;

@@ -4,8 +4,8 @@ pub mod rmcp;
 
 use self::error::Error;
 use self::ipmi::{
-    command, AuthenticationAlgorithm, ChassisPowerState, Client, ConfidentialityAlgorithm,
-    IntegrityAlgorithm,
+    AuthenticationAlgorithm, ChassisPowerState, Client, ConfidentialityAlgorithm,
+    IntegrityAlgorithm, command,
 };
 use log::trace;
 use std::net::{ToSocketAddrs, UdpSocket};
