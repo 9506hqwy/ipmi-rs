@@ -1,6 +1,6 @@
 use crate::ipmi::CompletionCode;
 use aes::cipher::inout;
-use hmac::digest::crypto_common;
+use hmac::digest;
 use std::io;
 
 #[derive(Debug)]
@@ -8,7 +8,7 @@ pub enum Error {
     Bind(io::Error),
     Decrypt(inout::block_padding::UnpadError),
     Encrypt(inout::PadError),
-    Hash(crypto_common::InvalidLength),
+    Hash(digest::InvalidLength),
     Integrity,
     InvalidPacketLength,
     InvalidUsernameLength,
@@ -30,8 +30,8 @@ impl From<inout::PadError> for Error {
     }
 }
 
-impl From<crypto_common::InvalidLength> for Error {
-    fn from(error: crypto_common::InvalidLength) -> Self {
+impl From<digest::InvalidLength> for Error {
+    fn from(error: digest::InvalidLength) -> Self {
         Error::Hash(error)
     }
 }

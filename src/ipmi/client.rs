@@ -4,8 +4,8 @@ use super::{
 };
 use crate::error::Error;
 use crate::rmcp;
-use hmac::Mac;
-use hmac::digest::crypto_common::InvalidLength;
+use hmac::digest::InvalidLength;
+use hmac::{KeyInit, Mac};
 use std::convert::TryFrom;
 use std::net::{ToSocketAddrs, UdpSocket};
 use uuid::Uuid;
@@ -142,22 +142,16 @@ where
     }
 
     // sec 13.28.4
-    pub fn integrity_data<H: Mac + hmac::digest::KeyInit>(
-        &self,
-        data: &[u8],
-    ) -> Result<Vec<u8>, InvalidLength> {
+    pub fn integrity_data<H: Mac + KeyInit>(&self, data: &[u8]) -> Result<Vec<u8>, InvalidLength> {
         let k1 = self.k1::<H>()?;
-        let mut hasher = <H as Mac>::new_from_slice(k1.as_slice())?;
+        let mut hasher = <H as KeyInit>::new_from_slice(k1.as_slice())?;
         hasher.update(data);
         let hash = hasher.finalize().into_bytes().to_vec();
         Ok(hash)
     }
 
     // sec 13.31 Message2
-    pub fn check_rakp2<H: Mac + hmac::digest::KeyInit>(
-        &self,
-        pkt: &RakpMessage2,
-    ) -> Result<(), Error> {
+    pub fn check_rakp2<H: Mac + KeyInit>(&self, pkt: &RakpMessage2) -> Result<(), Error> {
         if let Some(auth_code) = pkt.auth_code() {
             let mut data = vec![];
             data.extend_from_slice(&self.sidm.to_le_bytes());
@@ -181,10 +175,7 @@ where
     }
 
     // sec 13.31 Message4
-    pub fn check_rakp4<H: Mac + hmac::digest::KeyInit>(
-        &self,
-        pkt: &RakpMessage4,
-    ) -> Result<(), Error> {
+    pub fn check_rakp4<H: Mac + KeyInit>(&self, pkt: &RakpMessage4) -> Result<(), Error> {
         if let Some(auth_code) = pkt.integrity() {
             let mut data = vec![];
             data.extend_from_slice(&self.rm.to_le_bytes());
@@ -203,7 +194,7 @@ where
     }
 
     // sec 13.31 SIK
-    pub fn sik<H: Mac + hmac::digest::KeyInit>(&self) -> Result<Vec<u8>, InvalidLength> {
+    pub fn sik<H: Mac + KeyInit>(&self) -> Result<Vec<u8>, InvalidLength> {
         let mut sik = vec![];
         sik.extend_from_slice(&self.rm.to_le_bytes());
         sik.extend_from_slice(&self.rc.to_le_bytes());
@@ -215,7 +206,7 @@ where
     }
 
     // sec 13.32 K1
-    pub fn k1<H: Mac + hmac::digest::KeyInit>(&self) -> Result<Vec<u8>, InvalidLength> {
+    pub fn k1<H: Mac + KeyInit>(&self) -> Result<Vec<u8>, InvalidLength> {
         let data = &[
             0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
             0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
@@ -224,7 +215,7 @@ where
     }
 
     // sec 13.32 K2
-    pub fn k2<H: Mac + hmac::digest::KeyInit>(&self) -> Result<Vec<u8>, InvalidLength> {
+    pub fn k2<H: Mac + KeyInit>(&self) -> Result<Vec<u8>, InvalidLength> {
         let data = &[
             0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
             0x02, 0x02, 0x02, 0x02, 0x02, 0x02,
@@ -232,21 +223,15 @@ where
         self.hash_sik::<H>(data)
     }
 
-    pub fn hash_kuid<H: Mac + hmac::digest::KeyInit>(
-        &self,
-        data: &[u8],
-    ) -> Result<Vec<u8>, InvalidLength> {
-        let mut hasher = <H as Mac>::new_from_slice(self.password.as_bytes())?;
+    pub fn hash_kuid<H: Mac + KeyInit>(&self, data: &[u8]) -> Result<Vec<u8>, InvalidLength> {
+        let mut hasher = <H as KeyInit>::new_from_slice(self.password.as_bytes())?;
         hasher.update(data);
         Ok(hasher.finalize().into_bytes().to_vec())
     }
 
-    pub fn hash_sik<H: Mac + hmac::digest::KeyInit>(
-        &self,
-        data: &[u8],
-    ) -> Result<Vec<u8>, InvalidLength> {
+    pub fn hash_sik<H: Mac + KeyInit>(&self, data: &[u8]) -> Result<Vec<u8>, InvalidLength> {
         let key = self.sik::<H>()?;
-        let mut hasher = <H as Mac>::new_from_slice(key.as_slice())?;
+        let mut hasher = <H as KeyInit>::new_from_slice(key.as_slice())?;
         hasher.update(data);
         Ok(hasher.finalize().into_bytes().to_vec())
     }

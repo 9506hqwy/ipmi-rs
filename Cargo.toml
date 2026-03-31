@@ -10,17 +10,17 @@ keywords = ["ipmi"]
 categories = ["network-programming"]
 
 [dependencies]
-aes = "0.8.1"
+aes = "0.8.4"
 cbc = { version = "0.1.2", features = ["std"] }
-hmac = "0.12.1"
-log = "0.4.17"
+hmac = "0.13.0"
+log = "0.4.29"
 rand = "0.10.0"
-sha-1 = "0.10.0"
-uuid = "1.0.0"
+sha1 = "0.11.0"
+uuid = "1.23.0"
 
 [dev-dependencies]
-clap = "4.3.17"
-env_logger = "0.11.8"
+clap = "4.6.0"
+env_logger = "0.11.10"
 
 [[example]]
 name = "ipmi"
