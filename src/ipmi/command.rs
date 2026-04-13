@@ -4,7 +4,7 @@ use super::{
     IntegrityAlgorithm, PayloadType, PrivilegeLevel, pkt15, pkt20, request,
 };
 use crate::error::Error;
-use aes::cipher::{BlockDecryptMut, BlockEncryptMut, KeyIvInit, block_padding::NoPadding};
+use aes::cipher::{BlockModeDecrypt, BlockModeEncrypt, KeyIvInit, block_padding::NoPadding};
 use hmac::Hmac;
 use rand;
 use sha1::Sha1;
@@ -310,9 +310,9 @@ fn decrypt_payload<A: ToSocketAddrs>(
     }
 
     let k2 = client.k2::<HmacSha1>()?;
-    let decryptor = Aes128CbcDec::new(k2[..16].into(), payload[..16].into());
-    let mut cipher = payload[16..].to_vec();
-    let plain = decryptor.decrypt_padded_mut::<NoPadding>(&mut cipher)?;
+    let decryptor = Aes128CbcDec::new(k2[..16].try_into()?, payload[..16].try_into()?);
+    let cipher = payload[16..].to_vec();
+    let plain = decryptor.decrypt_padded_vec::<NoPadding>(&cipher)?;
     let pad_size = *plain.last().unwrap() as usize;
     let payload_end = plain.len() - pad_size - 1;
     let res = Response::parse(&plain[..payload_end])?;
@@ -322,15 +322,14 @@ fn decrypt_payload<A: ToSocketAddrs>(
 // sec 13.29
 fn encrypt_payload<A: ToSocketAddrs>(
     client: &Client<A>,
-    mut payload: Vec<u8>,
+    payload: Vec<u8>,
 ) -> Result<Vec<u8>, Error> {
     let k2 = client.k2::<HmacSha1>()?;
     let iv = rand::random::<[u8; 16]>(); // TODO: sec 13.34
-    let cipher = Aes128CbcEnc::new(k2[..16].into(), &iv.into());
-    let len = payload.len();
-    let cipher = cipher.encrypt_padded_mut::<NoPadding>(&mut payload, len)?;
+    let cipher = Aes128CbcEnc::new(k2[..16].try_into()?, &iv.into());
+    let cipher = cipher.encrypt_padded_vec::<NoPadding>(&payload);
     let mut padded = iv.to_vec();
-    padded.extend_from_slice(cipher);
+    padded.extend_from_slice(&cipher);
     Ok(padded)
 }
 

@@ -1,13 +1,14 @@
 use crate::ipmi::CompletionCode;
-use aes::cipher::inout;
+use aes::cipher::block_padding;
 use hmac::digest;
+use std::array::TryFromSliceError;
 use std::io;
 
 #[derive(Debug)]
 pub enum Error {
     Bind(io::Error),
-    Decrypt(inout::block_padding::UnpadError),
-    Encrypt(inout::PadError),
+    BlockSize(TryFromSliceError),
+    Decrypt(block_padding::Error),
     Hash(digest::InvalidLength),
     Integrity,
     InvalidPacketLength,
@@ -18,15 +19,15 @@ pub enum Error {
     SendPacket(io::Error),
 }
 
-impl From<inout::block_padding::UnpadError> for Error {
-    fn from(error: inout::block_padding::UnpadError) -> Self {
-        Error::Decrypt(error)
+impl From<TryFromSliceError> for Error {
+    fn from(error: TryFromSliceError) -> Self {
+        Error::BlockSize(error)
     }
 }
 
-impl From<inout::PadError> for Error {
-    fn from(error: inout::PadError) -> Self {
-        Error::Encrypt(error)
+impl From<block_padding::Error> for Error {
+    fn from(error: block_padding::Error) -> Self {
+        Error::Decrypt(error)
     }
 }
 
